@@ -22,12 +22,34 @@ pub extern "C" fn get_htm_about() -> *mut c_char {
 }
 
 #[no_mangle]
-pub extern "C" fn todo_list() -> *mut c_char {
+pub extern "C" fn todo_list_json() -> *mut c_char {
+    //let resp = mod_ssr::todo_list_json();
     let resp = mod_ssr::todo_list_json();
     let mut result: String = "".to_string();
     match resp {
         Ok(value) => {
-            println!("結果: {}", value);
+            //println!("結果: {}", value);
+            result = value.clone();
+        },
+        Err(err) => {
+            println!("エラー: {}", err);
+            return std::ptr::null_mut();
+        },
+    }    
+
+    CString::new(result)
+        .unwrap()
+        .into_raw()
+}
+
+#[no_mangle]
+pub extern "C" fn todo_list() -> *mut c_char {
+    //let resp = mod_ssr::todo_list_json();
+    let resp = mod_ssr::todo_list_elem();
+    let mut result: String = "".to_string();
+    match resp {
+        Ok(value) => {
+            //println!("結果: {}", value);
             result = value.clone();
         },
         Err(err) => {

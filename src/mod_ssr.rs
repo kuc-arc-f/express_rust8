@@ -3,6 +3,14 @@ use serde_json::json;
 use std::fs;
 use std::io::{self, Write};
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TodoItem {
+    pub id: u32,
+    pub title: String,
+    pub description: String,
+    pub completed: bool,    
+}
+
 pub fn get_htm_top() -> String
 {
   let ssr_htm: String = r#"<!doctype html>
@@ -77,4 +85,103 @@ pub fn todo_list_json() -> std::result::Result<String, String> {
     let out = &todo_items.clone();
     let j1 = json!(&out);
     Ok(j1.to_string())
+}
+
+fn render_todo_list(todos: &[TodoItem]) -> String {
+    let todo_items = todos
+        .iter()
+        .map(|todo| {
+            let checked = if todo.completed { "checked" } else { "" };
+            let title_class = if todo.completed {
+                "line-through text-stone-400"
+            } else {
+                ""
+            };
+            format!(
+                r##"
+          <li class="group flex items-center justify-between p-4 hover:bg-stone-50 cursor-pointer transition-colors"
+              hx-get="/api/todo/get/{id}"
+              hx-target="#dialog-container"
+              hx-swap="innerHTML">
+            <div class="flex items-center gap-3">
+              <span class="text-stone-800 font-medium {title_class}">{title}</span>
+            </div>
+            <form class="mt-4 flex gap-2" hx-post="/api/todo/delete" hx-target="#todo-container" hx-swap="outerHTML">
+              <input type="hidden" name="id"  value="{id}" />
+              <button class="text-stone-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2"
+                      onclick="event.stopPropagation()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </form>
+          </li>"##,
+                id = todo.id,
+                title = todo.title,
+                title_class = title_class,
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("");
+
+    let empty_state = if todos.is_empty() {
+        r##"<li class="p-8 text-center text-stone-500">No tasks yet. Add one above!</li>"##
+    } else {
+        ""
+    };
+
+    format!(
+        r##"
+    <div class="bg-white w-3xl rounded-xl shadow-sm border border-stone-200 overflow-hidden" id="todo-container">
+        <div>
+            <a href="/" class="font-bold ms-4" >Home</a>
+            <a href="/about" class="ms-4" >[ about ]</a>
+            <hr class="my-2" />
+        </div>
+ 
+      <div class="p-6 border-b border-stone-200">
+        <h1 class="text-2xl font-semibold text-stone-800">Todo List</h1>
+        <form class="mt-4 flex gap-2" hx-post="/api/todo/create" hx-target="#todo-container" hx-swap="outerHTML">
+          <input type="text" name="title" required placeholder="Add a new task..." class="flex-1 px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent" />
+          <button type="submit" class="px-4 py-2 bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors font-medium">Add</button>
+        </form>
+      </div>
+      <ul class="divide-y divide-stone-100">
+{items}{empty_state}
+      </ul>
+      <div id="dialog-container"></div>
+    </div>
+  "##,
+        items = todo_items,
+        empty_state = empty_state,
+    )
+}
+
+pub fn todo_list_elem() -> std::result::Result<String, String> {
+    let mut ret = "".to_string();
+
+    let mut out_items: Vec<TodoItem> = Vec::new();
+    let data = super::mod_todo::load_data();
+    if data.items.is_empty() {
+        println!("No todos found.");
+        let html = render_todo_list(&out_items);
+        return Ok(html.to_string());
+    }
+    let todo_items = data.items;
+    for todo in &todo_items {
+        let row = TodoItem {
+              id: todo.id,
+              title: todo.title.clone(),
+              description: "".to_string(),
+              completed: false,
+        };
+        out_items.push(row);
+        println!("  #{}: {}", todo.id, todo.title);
+    }
+    //let out = &todo_items.clone();
+    //let j1 = json!(&out);
+    let html = render_todo_list(&out_items);
+    //println!("{}", html);
+    ret = html.clone();
+    Ok(ret.to_string())
 }

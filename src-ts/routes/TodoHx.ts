@@ -1,6 +1,11 @@
-
-
-export function renderTodoList(todos) {
+interface Todo {
+  id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+}
+/*
+export function renderTodoList(todos: Todo[]) {
   return `
     <div class="bg-white w-3xl rounded-xl shadow-sm border border-stone-200 overflow-hidden" id="todo-container">
       <div>
@@ -42,9 +47,10 @@ export function renderTodoList(todos) {
     </div>
   `;
 }
+*/
 
 
-export function renderDialog(todo) {
+export function renderDialog(todo: Todo) {
   return `
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" id="todo-modal" onclick="this.remove()">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
