@@ -1,7 +1,6 @@
 {
   "type": "module",
   "scripts": {
-    "build": "npx esbuild --bundle ./src-ts/client.ts --minify --outfile=./public/js/client.js",
     "start": "npx tsx index.ts"
   },
   "dependencies": {
