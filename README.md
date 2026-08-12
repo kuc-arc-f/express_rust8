@@ -19,7 +19,12 @@ node Express + Rust , HTMX TODO
 ***
 ## Image
 
-![img1](/images/express_rust8.png)
+![img1](/images/express_rust8_2.png)
+
+***
+### related
+
+https://htmx.org/
 
 ***
 * Rust LIB build

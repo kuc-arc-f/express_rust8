@@ -2,7 +2,12 @@
 
 export function renderTodoList(todos) {
   return `
-    <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden" id="todo-container">
+    <div class="bg-white w-3xl rounded-xl shadow-sm border border-stone-200 overflow-hidden" id="todo-container">
+      <div>
+        <a href="/" class="font-bold ms-4" >Home</a>
+        <a href="/about" class="ms-4" >[ about ]</a>
+        <hr class="my-2" />
+      </div>
       
       <div class="p-6 border-b border-stone-200">
         <h1 class="text-2xl font-semibold text-stone-800">Todo List</h1>
@@ -18,12 +23,6 @@ export function renderTodoList(todos) {
               hx-target="#dialog-container" 
               hx-swap="innerHTML">
             <div class="flex items-center gap-3">
-              <input type="checkbox" ${todo.completed ? 'checked' : ''} 
-                     class="w-5 h-5 text-stone-800 rounded border-stone-300 focus:ring-stone-800 cursor-pointer"
-                     hx-post="/api/todos/${todo.id}/toggle"
-                     hx-target="#todo-container"
-                     hx-swap="outerHTML"
-                     onclick="event.stopPropagation()" />
               <span class="text-stone-800 font-medium ${todo.completed ? 'line-through text-stone-400' : ''}">${todo.title}</span>
             </div>
             <form class="mt-4 flex gap-2" hx-post="/api/todo/delete" hx-target="#todo-container" hx-swap="outerHTML">

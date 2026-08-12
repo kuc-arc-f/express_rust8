@@ -12,7 +12,14 @@ pub extern "C" fn ssr_htm_top() -> *mut c_char {
         .unwrap()
         .into_raw()
 }
-//renderTodoList
+#[no_mangle]
+pub extern "C" fn get_htm_about() -> *mut c_char {
+    let resp = mod_ssr::get_htm_about();
+
+    CString::new(resp)
+        .unwrap()
+        .into_raw()
+}
 
 #[no_mangle]
 pub extern "C" fn todo_list() -> *mut c_char {

@@ -6,6 +6,7 @@ import todoRouter from './src-ts/routes/todo';
 import indexRouter from './src-ts/routes/index';
 //pages
 import Top from './src-ts/pages/Top';
+import SsrAbout from './src-ts/pages/About';
 
 const app = express();
 import 'dotenv/config'
@@ -20,6 +21,15 @@ const errorObj = {ret: "NG", messase: "Error"};
 ///api/todos
 app.use('/api/todo', todoRouter);
 app.use('/api', indexRouter);
+
+app.get('/about', (req: any, res: any) => {
+  try {
+    const htm = SsrAbout();
+    res.send(htm);
+  } catch (error) {
+    res.sendStatus(500);
+  }
+});
 
 app.get('/', (req: any, res: any) => {
   try {
