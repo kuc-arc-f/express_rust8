@@ -59,6 +59,34 @@ pub fn list_todos() {
     }
 }
 
+pub fn todos_get(id: u32) -> String {
+    let mut ret = "".to_string();
+
+    let data = load_data();
+    if data.items.is_empty() {
+        println!("No todos found.");
+        return ret;
+    }
+    let mut row = super::mod_ssr::TodoItem {
+        id: 0,
+        title: "".to_string(),
+        description: "".to_string(),
+        completed: false,
+    };        
+    for todo in data.items {
+        if todo.id == id {
+            row.id = todo.id;
+            row.title = todo.title.clone();
+        }
+        //println!("  #{}: {}", todo.id, todo.title);
+    }
+    let out = super::mod_ssr::render_dialog(&row);
+    //println!("out={}", out);
+    ret = out;
+    return ret;
+}
+
+
 pub fn list_todo_json() -> std::result::Result<String, String> {
     let data = load_data();
     if data.items.is_empty() {

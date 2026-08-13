@@ -44,7 +44,6 @@ pub extern "C" fn todo_list_json() -> *mut c_char {
 
 #[no_mangle]
 pub extern "C" fn todo_list() -> *mut c_char {
-    //let resp = mod_ssr::todo_list_json();
     let resp = mod_ssr::todo_list_elem();
     let mut result: String = "".to_string();
     match resp {
@@ -58,6 +57,26 @@ pub extern "C" fn todo_list() -> *mut c_char {
         },
     }    
 
+    CString::new(result)
+        .unwrap()
+        .into_raw()
+}
+//todo_get
+#[no_mangle]
+pub extern "C" fn todo_get(id :u32) -> *mut c_char {
+    let mut result: String = "".to_string();
+    result = mod_todo::todos_get(id);
+    /*
+    match resp {
+        Ok(value) => {
+            result = value.clone();
+        },
+        Err(err) => {
+            println!("エラー: {}", err);
+            return std::ptr::null_mut();
+        },
+    }    
+    */
     CString::new(result)
         .unwrap()
         .into_raw()

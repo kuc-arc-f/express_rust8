@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+//use std::fmt::Write;
 use std::fs;
 use std::io::{self, Write};
 
@@ -131,7 +132,7 @@ fn render_todo_list(todos: &[TodoItem]) -> String {
     };
 
     format!(
-        r##"
+    r##"
     <div class="bg-white w-3xl rounded-xl shadow-sm border border-stone-200 overflow-hidden" id="todo-container">
         <div>
             <a href="/" class="font-bold ms-4" >Home</a>
@@ -184,4 +185,55 @@ pub fn todo_list_elem() -> std::result::Result<String, String> {
     //println!("{}", html);
     ret = html.clone();
     Ok(ret.to_string())
+}
+
+pub fn render_dialog(todo: &TodoItem) -> String {
+    let status_badge_class = if todo.completed {
+        "bg-green-100 text-green-800"
+    } else {
+        "bg-yellow-100 text-yellow-800"
+    };
+    let status_label = if todo.completed { "Completed" } else { "Pending" };
+
+    let mut html = String::new();
+   html = format!(
+        r##"
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" id="todo-modal" onclick="this.remove()">
+      <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="text-xl font-semibold text-stone-800">{}</h2>
+            <button class="text-stone-400 hover:text-stone-600 transition-colors" onclick="document.getElementById('todo-modal').remove()">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <form hx-put="/api/todos/{}" hx-target="#todo-container" hx-swap="outerHTML">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-stone-700 mb-1">Status</label>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {}">{}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+              <button type="button" class="px-4 py-2 text-stone-700 hover:bg-stone-100 rounded-lg transition-colors font-medium" onclick="document.getElementById('todo-modal').remove()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  "##,
+        todo.title,
+        todo.id,
+        status_badge_class,
+        status_label
+    );
+    //.expect("write! to String cannot fail");
+
+    html
 }

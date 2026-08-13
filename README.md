@@ -1,10 +1,10 @@
 ﻿# express_rust8
 
- Version: 0.9.1
+ Version: 0.9.2
 
  date    : 2026/08/11
 
- update :
+ update : 2026/08/13
 
 ***
 
@@ -53,5 +53,10 @@ npm run start
 ```
 curl http://localhost:3000/api/todo/list
 ```
+
+***
+### version
+
+* V_0_9_1: new
 
 ***

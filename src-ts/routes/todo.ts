@@ -1,7 +1,6 @@
 import express from 'express';
 import LibLoad from "../../LibLoad"
-//import { renderTodoList, renderDialog } from "./TodoHx"
-import { renderDialog } from "./TodoHx"
+//import { renderDialog } from "./TodoHx"
 
 const router = express.Router();
 
@@ -15,13 +14,6 @@ router.post('/create', async function(req, res) {
     console.log(body);
     todoAdd(body.title);
     const resp = todo_list();
-    /*
-    if(resp){
-      const out = JSON.parse(resp)
-      const ht_str = renderTodoList(out)
-      return res.send(ht_str);
-    }
-    */
     return res.send(resp)
   } catch (error) {
     console.error(error);
@@ -37,15 +29,6 @@ router.get('/list', async function(req, res) {
     const body = req.body
     const resp = todo_list();
     return res.send(resp)
-    /*
-    if(resp){
-      const out = JSON.parse(resp)
-      console.log(out)
-      const ht_str = renderTodoList(out)
-      return res.send(ht_str);
-    }
-    return res.send(resp);
-    */
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
@@ -59,19 +42,13 @@ router.get('/get/:id', async function(req, res) {
     const todo_list_json = lib.func('char* todo_list_json()');    
     const id = req.params.id;
     console.log("id=", id)
-    const resp = todo_list_json();
-    if(resp){
-      const out = JSON.parse(resp)
-      console.log(out)
-      const todo = out.filter(row => row.id === Number(id));
-      //console.log(todo)
-      if(todo[0]){
-        const ht_str = renderDialog(todo[0])
-        return res.send(ht_str);
-      }
-      return res.send("");
-    }
-    return res.send("");
+    const todo_get = lib.func(
+        "todo_get",
+        "char*",
+        ["int"]
+    );    
+    const resp = todo_get(Number(id));
+    return res.send(resp);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
